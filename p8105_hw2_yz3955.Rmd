@@ -1,0 +1,83 @@
+---
+title: "Homework 1"
+author: Yiming Zhao
+output: github_document
+---
+
+This is my solution for HW1
+
+```{r}
+library(tidyverse)
+data("penguins", package = "palmerpenguins")
+```
+
+## Problem 1
+
+###### Create a data frame with the specified elements.
+
+```{r create_df}
+prob1_df = 
+  tibble(
+    samp = rnorm(10),
+    samp_gt_0 = samp > 0,
+    char_vec = c("a", "b", "c", "d", "e", "f", "g", "h", "i","j"),
+    factor_vec = factor(c("low", "low", "low", "mod", "mod", "mod", "mod", "high", "high", "high"))
+  )
+```
+
+###### Take the mean of each variable in my data frame.
+
+```{r mean_pull_var}
+mean(pull(prob1_df, samp))
+mean(pull(prob1_df, samp_gt_0))
+mean(pull(prob1_df, char_vec))
+mean(pull(prob1_df, factor_vec))
+```
+
+###### I can take the mean of numbers and logical vectors but not character or factor vectors.
+
+
+```{r try_numeric, results = 'hide'}
+as.numeric(pull(prob1_df, samp))
+as.numeric(pull(prob1_df, samp_gt_0))
+as.numeric(pull(prob1_df, char_vec))
+as.numeric(pull(prob1_df, factor_vec))
+```
+
+###### I can convert logical and factor into number, but not character. This is because the logical vectors:True and false, are considered as number 1 and 0 in the R. And Factors are used to categorize the data and store it on multiple levels, the levels can be converted into numbers.
+###### These conversions help explain why the mean of numbers and logical vectors can be taken but not character or factor vectors.
+
+
+```{r convert_logi}
+as.numeric(pull(prob1_df, samp_gt_0)) * pull(prob1_df, samp)
+as.factor(pull(prob1_df, samp_gt_0)) * pull(prob1_df, samp)
+as.numeric(as.factor(pull(prob1_df, samp_gt_0))) * pull(prob1_df, samp)
+```
+
+
+## Problem 2
+###### Write a short description of the penguins dataset:
+The variables in penguins dataset includes: `r ls(penguins)`  
+The species for penguins in the penguins dataset includes: `r levels(penguins$species)`  
+The range year of dataset is `r range(penguins$year, na.rm = FALSE)`  
+The range of bill length of penguins in the dataset is `r range(na.omit(penguins$bill_length_mm), na.rm = FALSE)` mm  
+The penguins data frame has `r nrow(penguins)` rows.
+The penguins data frame has `r ncol(penguins)` columns.  
+The mean flipper length for penguins in this data frame is `r mean(na.omit(penguins$flipper_length_mm))` mm
+
+###### Create a scatterplot for bill length vs flipper length, and save the plot as "scatterplot_bill_flipper.png"
+```{r penguins_scatterplot}
+plot_df = tibble(
+  bill_length = penguins$bill_length_mm, 
+  flipper_length = penguins$flipper_length_mm,
+  species = penguins$species
+)
+
+ggplot(plot_df, aes(x = bill_length, y = flipper_length, color = species)) + 
+  geom_point() + 
+  xlab("bill length (mm)") +
+  ylab("flipper length (mm)")
+
+ggsave("scatterplot_bill_flipper.png")
+```
+
