@@ -67,8 +67,17 @@ month_df =
 precip_df = 
   bind_rows(precip_2018, precip_2017) 
 
-left_join(precip_df, month_df,by = "month") %>% 
+precip_comb1718 = left_join(precip_df, month_df,by = "month") %>% 
   relocate(year, month, month_name)
 ```
 
-This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trash wheel collects that trash, and stores it in a dumpsters. The dataset contains information on year, month, and trash collected, include some specific kinds of trash. There are a total of`r nrow(trashwheel_df)` rows in our final dataset. Addtional data sheets include month precipitation data.
+This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trash wheel collects that trash, and stores it into a dumpsters. The dataset contains information on year, month, and trash collected, includes some specific kinds of trash. There are a total of `r nrow(trashwheel_df)` rows in our final trash wheel collection dataset. And the key variables for the trash wheel collection dataset : `r ls(trashwheel_df)`. 
+
+Additional data sheets include month precipitation data for year 2017 and year 2018 are presented in this file. There are a total of `r nrow(precip_comb1718)` rows in our final month precipitation dataset. And the key variables for the month precipitation dataset : month_name, total and year.  
+
+For year 2018, the total precipitation is `r select(precip_2018,total) %>% sum()`
+
+The median number of sports balls in a dumpster in 2017 is `r median(filter(trashwheel_df, year == 2017)$sports_balls)`
+
+
+
