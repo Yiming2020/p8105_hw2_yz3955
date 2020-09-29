@@ -71,7 +71,7 @@ precip_comb1718 = left_join(precip_df, month_df,by = "month") %>%
   relocate(year, month, month_name)
 ```
 
-This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trash wheel collects that trash, and stores it into a dumpsters. The dataset contains information on year, month, and trash collected, includes some specific kinds of trash. There are a total of `r nrow(trashwheel_df)` rows in our final trash wheel collection dataset. And the key variables for the trash wheel collection dataset : `r ls(trashwheel_df)`. 
+This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, Maryland. As trash enters the inner harbor, the trash wheel collects that trash, and stores it into a dumpsters. The dataset contains information on year, month, and trash collected, includes some specific kinds of trash. There are a total of `r nrow(trashwheel_df)` rows in our final trash wheel collection dataset. And the key variables for the trash wheel collection dataset : `r names(trashwheel_df)`. 
 
 Additional data sheets include month precipitation data for year 2017 and year 2018 are presented in this file. There are a total of `r nrow(precip_comb1718)` rows in our final month precipitation dataset. And the key variables for the month precipitation dataset : month_name, total and year.  
 
@@ -93,7 +93,7 @@ nyc_tran_df =
  
 ```
 
-There are `r ncol(nyc_tran_df)` variables containing in the dataset: `r ls(nyc_tran_df)`.  
+There are `r ncol(nyc_tran_df)` variables containing in the dataset: `r names(nyc_tran_df)`.  
 In order to clean dataset, I read the csv file at first. And then clean its variable names. Next, I selected the interested variables from the orginal dataset. Then I converted entry and vending variables from character(YES/NO) to a logical variable. Finally, I got a `r nrow(nyc_tran_df)` x `r ncol(nyc_tran_df)` size of the resulting dataset. These data are tidy.
   
   
@@ -154,6 +154,29 @@ snp_df =
   arrange(year, month, .by_group = FALSE) %>% 
   relocate(year, month_name, day, close) %>% 
   subset(select = c(-month, -day))
+```
+
+Third tidy the unemployment data
+
+```{r}
+month_abb_df = 
+  tibble(
+    month_abb = month.abb,
+    month_name = month.name
+    )
+
+unemploy_df = 
+  read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month_abb",
+    values_to = "unemployment_value"
+    ) %>% 
+  left_join(month_abb_df, by = "month_abb") %>% 
+  subset(select = -month_abb) %>% 
+  janitor::clean_names() %>% 
+  relocate(year, month_name)
+
 ```
 
 
