@@ -123,6 +123,21 @@ nyc_reform_df =
 ```
 
 • There are `r nrow(filter(nyc_reform_df, route_value == "A"))` distinct stations serve the A train.  
-• In addition, there are `r nrow(filter(nyc_reform_df, route_value == "A", ada == TRUE))` distinct stations that serve the A train are ADA compliant.
+• In addition, there are `r nrow(filter(nyc_reform_df, route_value == "A", ada == TRUE))` distinct stations that serve the A train are ADA compliant.  
+
+
+## Problem 3
+
+First clean the data in pols-month.csv
+
+```{r}
+pols_month_df = 
+  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  separate(mon, into = c("year", "month", "day")) %>% 
+  mutate(month = month.name[as.numeric(month)],
+         president = ifelse(prez_dem == 1, "dem", "gop")) %>% 
+  subset(select = c(-prez_dem, -prez_gop, -day))
+```
+
 
 
