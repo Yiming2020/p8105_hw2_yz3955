@@ -93,4 +93,36 @@ nyc_tran_df =
  
 ```
 
-There are `r ncol(nyc_tran_df)` variables containing in the dataset: `r ls(nyc_tran_df)`. In order to clean dataset, I read the csv file at first. And then clean its variable names. Next, I selected the interested variables from the orginal dataset. Then I converted entry and vending variables from character(YES/NO) to a logical variable. Finally, I got a `r nrow(nyc_tran_df)` x `r ncol(nyc_tran_df)` size of the resulting dataset. These data are tidy.
+There are `r ncol(nyc_tran_df)` variables containing in the dataset: `r ls(nyc_tran_df)`.  
+In order to clean dataset, I read the csv file at first. And then clean its variable names. Next, I selected the interested variables from the orginal dataset. Then I converted entry and vending variables from character(YES/NO) to a logical variable. Finally, I got a `r nrow(nyc_tran_df)` x `r ncol(nyc_tran_df)` size of the resulting dataset. These data are tidy.
+  
+  
+Identify distinct stations:
+```{r}
+nyc_station = 
+  distinct(nyc_tran_df, line, station_name, .keep_all = T)
+```
+
+• After calculation, there are `r nrow(nyc_station)` distinct stations, which are identified by name and line.  
+• Moreover, there are `r nrow(filter(nyc_station, ada == TRUE))` distinct stations are ADA compliant, and there are `r nrow(filter(nyc_tran_df, ada == TRUE))` stations are ADA compliant.  
+• As there are `r nrow(filter(nyc_tran_df, vending == FALSE))` stations entrances / exits that do not have vending, and there are `r nrow(filter(nyc_tran_df, vending == FALSE, entry == TRUE))` stations entrances / exits that allow entrance but do not have vendings, so the proportion of station entrances/exits without vending allow entrance is `r nrow(filter(nyc_tran_df, vending == FALSE, entry == TRUE))/nrow(filter(nyc_tran_df, vending == FALSE))`
+  
+  
+Reformat data
+
+```{r}
+nyc_reform_df = 
+  nyc_station %>% 
+  mutate(route8 = as.character(route8), route9 = as.character(route9), 
+         route10 = as.character(route10),route11 = as.character(route11)) %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_name",
+    values_to = "route_value"
+  )
+```
+
+• There are `r nrow(filter(nyc_reform_df, route_value == "A"))` distinct stations serve the A train.  
+• In addition, there are `r nrow(filter(nyc_reform_df, route_value == "A", ada == TRUE))` distinct stations that serve the A train are ADA compliant.
+
+
