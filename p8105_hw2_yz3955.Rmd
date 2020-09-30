@@ -104,7 +104,7 @@ nyc_station =
 ```
 
 • After calculation, there are `r nrow(nyc_station)` distinct stations, which are identified by name and line.  
-• Moreover, there are `r nrow(filter(nyc_station, ada == TRUE))` distinct stations are ADA compliant, and there are `r nrow(filter(nyc_tran_df, ada == TRUE))` stations are ADA compliant.  
+• Moreover, there are `r nrow(filter(nyc_station, ada == TRUE))` distinct stations are ADA compliant.  
 • As there are `r nrow(filter(nyc_tran_df, vending == FALSE))` stations entrances / exits that do not have vending, and there are `r nrow(filter(nyc_tran_df, vending == FALSE, entry == TRUE))` stations entrances / exits that allow entrance but do not have vendings, so the proportion of station entrances/exits without vending allow entrance is `r nrow(filter(nyc_tran_df, vending == FALSE, entry == TRUE))/nrow(filter(nyc_tran_df, vending == FALSE))`
   
   
@@ -134,7 +134,8 @@ First clean the data in pols-month.csv
 pols_month_df = 
   read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
   separate(mon, into = c("year", "month", "day")) %>% 
-  mutate(month = as.numeric(month),
+  mutate(month = as.numeric(month), 
+         year = as.numeric((year)),
          president = ifelse(prez_dem == 1, "dem", "gop")) %>% 
   left_join(month_df, by = "month") %>%
   subset(select = c(-prez_dem, -prez_gop, -day, -month)) %>% 
@@ -175,8 +176,17 @@ unemploy_df =
   left_join(month_abb_df, by = "month_abb") %>% 
   subset(select = -month_abb) %>% 
   janitor::clean_names() %>% 
-  relocate(year, month_name)
+  relocate(year, month_name) %>% 
+  drop_na(unemployment_value)
 
 ```
 
+Join the datasets by merging snp into pols, and merging unemployment into the result
 
+```{r}
+polssnp_unem_df = 
+  left_join(pols_month_df, snp_df, by = c("year", "month_name")) %>% 
+  left_join(unemploy_df,by = c("year", "month_name"))
+```
+
+For the pols_month_df dataset, it contains `r ncol(pols_month_df)` variables from Jan.1947 to Jun.2015：`r names(pols_month_df)`. For the snp_df dataset, it contains close values from Jan in 1950 to July in 2015. For unemploy_df dataset, it contains unemployment values from Jan in 1948 to Jun in 2015. After cleaning above three datasets, I merged snp_df into  pols_month_df, and then merged unemploy_df into the result. I used year and month_name as key variables to join them together. After merging three datasets, the dimension of the resulting dataset is `r nrow(polssnp_unem_df)` x `r ncol(polssnp_unem_df)`. The range years of the resulting dataset is `r range(polssnp_unem_df$year)`. The resulting dataset has `r ncol(polssnp_unem_df)` variables: `r names(polssnp_unem_df)`.
